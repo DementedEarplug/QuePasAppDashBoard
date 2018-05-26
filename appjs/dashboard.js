@@ -300,3 +300,60 @@ function drawDislikesCountChart() //change this
     chart.draw(data, options);
 
 }
+
+//////////////////////////////////////////////////
+// Draw charts for Trending Hashtag             //
+//////////////////////////////////////////////////
+
+google.charts.setOnLoadCallback(drawTrendingChart); //change this
+
+function reformatTrendingData(jsonData){ //change this
+    var temp= jsonData.Trending;   //change this
+    var result = [];
+    var i;
+    var s;
+    var row;
+    for (i=0; i < temp.length; ++i){
+        row= temp[i]
+        dataElement = [];
+        dataElement.push(row.hashtagcontent);
+        dataElement.push(row.count);
+        result.push(dataElement);
+    }
+    console.log("Data: " + JSON.stringify(result));
+    return result;
+}
+
+function drawTrendingChart() //change this
+{
+    var jsonData = $.ajax({
+        url: "http://127.0.0.1:8000/QuePasApp/DashBoard/trending", //change this
+        dataType: "json",
+        async: false
+    }).responseText;
+
+    console.log("jsonData: " + JSON.parse(jsonData));
+
+    // Create our data table out of JSON data loaded from server.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Days');
+    data.addColumn('number', 'Trending');   //Change this and below
+    data.addRows(reformatTrendingData(JSON.parse(jsonData)));
+
+    var options = {
+        title: 'Trending Hashtags',   //change this
+        chartArea: {width: '50%'},
+        hAxis: {
+            title: 'Total Number',
+            minValue: 0
+        },
+        vAxis: {
+            title: 'HashTags'
+        }
+    };
+
+    var chart = new google.visualization.BarChart(document.getElementById('Trending')); //change this
+
+    chart.draw(data, options);
+
+}
